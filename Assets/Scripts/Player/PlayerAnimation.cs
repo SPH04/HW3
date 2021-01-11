@@ -1,32 +1,33 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
-public class PlayerAnimation : MonoBehaviour
+namespace Player
 {
-    [SerializeField] private float _normalAnimationSpeed;
-    [SerializeField] private float _accelerationAnimationSpeed;
-
-    private Animator _animator;
-
-    private void Start()
+    [RequireComponent(typeof(Animator))]
+    public class PlayerAnimation : MonoBehaviour
     {
-        _animator = GetComponent<Animator>();
-    }
-    private void Update()
-    {
-        (bool IsMovingRight, bool IsMovingLeft) values = (false, false);
+        [SerializeField] private float _normalAnimationSpeed;
+        [SerializeField] private float _accelerationAnimationSpeed;
 
-        if (Input.GetKey(KeyCode.D))
-            values = (true, false);
-        if (Input.GetKey(KeyCode.A))
-            values = (false, true);
-        if (Input.GetKey(KeyCode.LeftShift))
-            _animator.speed = _accelerationAnimationSpeed;
-        else
-            _animator.speed = _normalAnimationSpeed;
+        private Animator _animator;
+        private static readonly int IsMovingRight = Animator.StringToHash("IsMovingRight");
+        private static readonly int IsMovingLeft = Animator.StringToHash("IsMovingLeft");
 
-        _animator.SetBool("IsMovingRight", values.IsMovingRight);
-        _animator.SetBool("IsMovingLeft", values.IsMovingLeft);
+        private void Start()
+        {
+            _animator = GetComponent<Animator>();
+        }
+        private void Update()
+        {
+            (bool IsMovingRight, bool IsMovingLeft) valueTuple = (false, false);
+            if (Input.GetKey(KeyCode.D))
+                valueTuple = (true, false);
+            else if (Input.GetKey(KeyCode.A))
+                valueTuple = (false, true);
+            _animator.speed = Input.GetKey(KeyCode.LeftShift) ? _accelerationAnimationSpeed : _normalAnimationSpeed;
 
+            _animator.SetBool(IsMovingRight, valueTuple.IsMovingRight);
+            _animator.SetBool(IsMovingLeft, valueTuple.IsMovingLeft);
+
+        }
     }
 }
